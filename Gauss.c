@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define DECIMAL_PLACES	3
+#define ONE		(1<<DECIMAL_PLACES)
+
 typedef short int fixed;
 
 /*Input:
@@ -13,11 +16,14 @@ typedef short int fixed;
 
 */
 void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
-	
+	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
 	int i;
 	for(i = 0; i < size; ++i){
-		in[rowTo][i] += c*in[rowFrom][i];
-		out[rowTo][i] += c*out[rowFrom][i];
+		in[rowTo][i] += (c*in[rowFrom][i])>>DECIMAL_PLACES;
+		//printf("Add: %d\n",(c*out[rowFrom][i])>>DECIMAL_PLACES);
+		//printf("i: %d, rowToPre: %d\n", i, out[rowTo][i]);
+		out[rowTo][i] += (c*out[rowFrom][i])>>DECIMAL_PLACES;
+		//printf("i: %d, rowToPost: %d\n", i, out[rowTo][i]);
 	}
 }
 
@@ -61,12 +67,19 @@ void swapRows(short int** in, fixed** out, int row1, int row2, int size) {
 	}
 }
 
+inline fixed mod(fixed x,int m){
+	if(x<0) x*=-1;
+	return x%m;
+}
+
 void printMatrix(fixed** mat, int size) {
 	
 	int i,j;
 	for (i = 0; i < size; ++i) {
 		for (j = 0; j < size; ++j) {
-			printf("%d.%d ", mat[i][j]>>3,(mat[i][j]%8)*125);
+			printf("%d(", mat[i][j]);
+			if(mat[i][j]<0&&mat[i][j]>-ONE) printf("-");
+			printf("%d.%d) ", mat[i][j]/ONE,mod(mat[i][j],ONE)*125);	//find define if possible
 		}
 		printf("\n");
 	}
@@ -87,9 +100,9 @@ fixed** GaussJordan(short int** in, int size) {
 		//Potentially faster to write diagonal twice?
 		//6x3 give fewer cache misses?
 		for (j = 0; j < size; ++j) {
-			in[i][j]=in[i][j]<<3;
+			in[i][j]=in[i][j]<<DECIMAL_PLACES;
 			if (i == j) {
-				out[i][j] = 8;//1 shifted left 3
+				out[i][j] = ONE;//1 shifted left 3
 			} else {
 				out[i][j] = 0;
 			}
@@ -108,16 +121,28 @@ fixed** GaussJordan(short int** in, int size) {
 			}
 			swapRows(in, out, i, j, size);
 		}
-		//get to "1" which is represented by an 8
-		divideRowByConst(in[i], out[i], (in[i][i])>>3, size);
 		
+		printf("Got Here.\n");
+	
 		for (j = 0; j < size; ++j) {
 			if (j == i) {
 				continue;
 			}
-			addScalarMultipleOfLine(in, out, i, j, -in[j][i], size);
+			printf("Before:\n");
+			printMatrix(out,size);
+			printf("\n");
+			fixed coeff = -(in[j][i]/(in[i][i]>>DECIMAL_PLACES));
+			addScalarMultipleOfLine(in, out, i, j, coeff, size);
+			//printf("After:\n");
+			//printMatrix(out,size);
+			//printf("\n");
 		}
 	}
+
+	for(i=0; i<size; ++i){
+		divideRowByConst(in[i], out[i], in[i][i]>>DECIMAL_PLACES, size);
+	}
+
 	return out;
 }
 
