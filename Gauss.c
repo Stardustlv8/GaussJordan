@@ -13,7 +13,7 @@ inline fixed mod(fixed x,int m){
 }
 
 
-int shiftDown(int x, int n) {
+inline int shiftDown(int x, int n) {
 
 	if ((x >> (n-1)) % 2 == 0) {
 		return (x >> n);
@@ -34,9 +34,12 @@ int shiftDown(int x, int n) {
 void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
 	int i;
-	for(i = 0; i < size; ++i){
+	for(i = 0; i < size; i+=1) {
 		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
 		out[rowTo][i] += shiftDown((c*out[rowFrom][i]), DECIMAL_PLACES);
+		
+		//in[rowTo][i+1] += shiftDown((c*in[rowFrom][i+1]), DECIMAL_PLACES);
+		//out[rowTo][i+1] += shiftDown((c*out[rowFrom][i+1]), DECIMAL_PLACES);
 	}
 }
 
@@ -115,7 +118,7 @@ fixed** GaussJordan(fixed** in, int size) {
 			}
 		}
 	}
-	fprintf(stderr,"Output matrix initialized to identity...\n");
+	//fprintf(stderr,"Output matrix initialized to identity...\n");
 	
 	//Gauss Jordan method
 	for (i = 0; i < size; ++i) {
@@ -133,8 +136,8 @@ fixed** GaussJordan(fixed** in, int size) {
 			if (j == i) {
 				continue;
 			}
-			printMatrix(out,size);
-			printf("\n");
+			//printMatrix(out,size);
+			//printf("\n");
 			fixed coeff = -(in[j][i]/shiftDown(in[i][i],DECIMAL_PLACES));
 			addScalarMultipleOfLine(in, out, i, j, coeff, size);
 		}
@@ -179,7 +182,7 @@ int main(int argc, char** argv) {
 	//	{1,2,9,9},
 	//	{70,220,23,9} };
 	
-	test[0][0] = 3 << DECIMAL_PLACES;
+	/*test[0][0] = 3 << DECIMAL_PLACES;
 	test[0][1] = 1 << DECIMAL_PLACES;
 	test[0][2] = 1 << DECIMAL_PLACES;
 	test[0][3] = 234 << DECIMAL_PLACES;
@@ -194,10 +197,35 @@ int main(int argc, char** argv) {
 	test[3][0] = 70 << DECIMAL_PLACES;
 	test[3][1] = 220 << DECIMAL_PLACES;
 	test[3][2] = 23 << DECIMAL_PLACES;
-	test[3][3] = 9 << DECIMAL_PLACES;
+	test[3][3] = 9 << DECIMAL_PLACES;*/
 	
 	fprintf(stderr, "Input matrix initialized...\n");
-	fixed** out = GaussJordan(test, matrixSize);
+	
+	fixed** out;
+	
+	int a;
+	for (a = 0; a < 5000000; a++) {
+	
+		test[0][0] = 3 << DECIMAL_PLACES;
+		test[0][1] = 1 << DECIMAL_PLACES;
+		test[0][2] = 1 << DECIMAL_PLACES;
+		test[0][3] = 234 << DECIMAL_PLACES;
+		test[1][0] = 2 << DECIMAL_PLACES;
+		test[1][1] = 4 << DECIMAL_PLACES;
+		test[1][2] = 7 << DECIMAL_PLACES;
+		test[1][3] = 70 << DECIMAL_PLACES;
+		test[2][0] = 1 << DECIMAL_PLACES;
+		test[2][1] = 2 << DECIMAL_PLACES;
+		test[2][2] = 9 << DECIMAL_PLACES;
+		test[2][3] = 9 << DECIMAL_PLACES;
+		test[3][0] = 70 << DECIMAL_PLACES;
+		test[3][1] = 220 << DECIMAL_PLACES;
+		test[3][2] = 23 << DECIMAL_PLACES;
+		test[3][3] = 9 << DECIMAL_PLACES;
+	
+		out = GaussJordan(test, matrixSize);
+	}
+	
 	printf("Final:\n");
 	printMatrix(out, matrixSize);
 }
