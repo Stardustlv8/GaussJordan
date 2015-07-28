@@ -124,9 +124,13 @@ fixed** GaussJordan(fixed** in, int size) {
 		
 		if (in[i][i] == 0) {
 			for (j = i+1; j < size; ++j) {
-				if (in[j][i] == 0) {
+				if (in[j][i] != 0) {
 					break;
 				}
+			}
+			if(j==size){
+				fprintf(stderr, "Matrix is not invertible.\n");
+				exit(1);
 			}
 			swapRows(in, out, i, j, size);
 		}
@@ -196,9 +200,9 @@ int main(int argc, char** argv) {
 	test[3][0] = 70 << DECIMAL_PLACES;
 	test[3][1] = 220 << DECIMAL_PLACES;
 	test[3][2] = 23 << DECIMAL_PLACES;
-	test[3][3] = 9 << DECIMAL_PLACES;*/
+	test[3][3] = 9 << DECIMAL_PLACES;
 	
-	fprintf(stderr, "Input matrix initialized...\n");
+	fixed** out = GaussJordan(test, matrixSize);*/
 	
 	fixed** out;
 	
@@ -224,6 +228,8 @@ int main(int argc, char** argv) {
 	
 		out = GaussJordan(test, matrixSize);
 	}
+	
+	fprintf(stderr, "Input matrix initialized...\n");
 	
 	printf("Final:\n");
 	printMatrix(out, matrixSize);
