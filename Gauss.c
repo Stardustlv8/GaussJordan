@@ -14,7 +14,6 @@ inline fixed mod(fixed x,int m){
 
 
 inline int shiftDown(int x, int n) {
-
 	if ((x >> (n-1)) % 2 == 0) {
 		return (x >> n);
 	} else {
@@ -31,15 +30,16 @@ inline int shiftDown(int x, int n) {
 	size: the size of the row
 
 */
-void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
+inline void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
 	int i;
-	for(i = 0; i < size; i+=1) {
+	for(i = size-1; i > 0; i-=2) {
+	//for(i = 1; i < size; i+=2){
 		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
 		out[rowTo][i] += shiftDown((c*out[rowFrom][i]), DECIMAL_PLACES);
-		
-		//in[rowTo][i+1] += shiftDown((c*in[rowFrom][i+1]), DECIMAL_PLACES);
-		//out[rowTo][i+1] += shiftDown((c*out[rowFrom][i+1]), DECIMAL_PLACES);
+
+		in[rowTo][i-1] += shiftDown((c*in[rowFrom][i-1]), DECIMAL_PLACES);
+		out[rowTo][i-1] += shiftDown((c*out[rowFrom][i-1]), DECIMAL_PLACES);
 	}
 }
 
@@ -48,7 +48,6 @@ void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo
 	out: row pointer in output matrix
 	c: number to divide by
 	size: size of row
-Optimization: multiply instead 
 
 */
 void divideRowByConst(fixed* in, fixed* out, fixed c, int size) {
