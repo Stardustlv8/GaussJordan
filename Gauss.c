@@ -6,6 +6,22 @@
 
 typedef short int fixed;
 
+
+inline fixed mod(fixed x,int m){
+	if(x<0) x*=-1;
+	return x%m;
+}
+
+
+int shiftDown(int x, int n) {
+
+	if ((x >> (n-1)) % 2 == 0) {
+		return (x >> n);
+	} else {
+		return (x >> n)+1;
+	}
+}
+
 /*Input:
 	in: input matrix
 	out: output matrix
@@ -19,11 +35,8 @@ void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
 	int i;
 	for(i = 0; i < size; ++i){
-		in[rowTo][i] += (c*in[rowFrom][i])>>DECIMAL_PLACES;
-		//printf("Add: %d\n",(c*out[rowFrom][i])>>DECIMAL_PLACES);
-		//printf("i: %d, rowToPre: %d\n", i, out[rowTo][i]);
-		out[rowTo][i] += (c*out[rowFrom][i])>>DECIMAL_PLACES;
-		//printf("i: %d, rowToPost: %d\n", i, out[rowTo][i]);
+		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
+		out[rowTo][i] += shiftDown((c*out[rowFrom][i]), DECIMAL_PLACES);
 	}
 }
 
@@ -35,7 +48,7 @@ void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo
 Optimization: multiply instead 
 
 */
-void divideRowByConst(short int* in, fixed* out, fixed c, int size) {
+void divideRowByConst(fixed* in, fixed* out, fixed c, int size) {
 	
 	int i;
 	for(i = 0; i < size; ++i){
@@ -53,9 +66,9 @@ void divideRowByConst(short int* in, fixed* out, fixed c, int size) {
 
 	Swaps all elements of row1 with the element in the same column in row2 for both in and out
 */
-void swapRows(short int** in, fixed** out, int row1, int row2, int size) {
+void swapRows(fixed** in, fixed** out, int row1, int row2, int size) {
 	
-	short int temp;
+	fixed temp;
 	int i;
 	for (i = 0; i < size; ++i) {
 		temp = in[row1][i];
@@ -65,11 +78,6 @@ void swapRows(short int** in, fixed** out, int row1, int row2, int size) {
 		out[row1][i] = out[row2][i];
 		out[row2][i] = temp;
 	}
-}
-
-inline fixed mod(fixed x,int m){
-	if(x<0) x*=-1;
-	return x%m;
 }
 
 void printMatrix(fixed** mat, int size) {
@@ -85,7 +93,7 @@ void printMatrix(fixed** mat, int size) {
 	}
 }
 
-fixed** GaussJordan(short int** in, int size) {
+fixed** GaussJordan(fixed** in, int size) {
 	
 	fixed** out = (fixed**) malloc(sizeof(fixed*) * size);
 	
@@ -100,7 +108,6 @@ fixed** GaussJordan(short int** in, int size) {
 		//Potentially faster to write diagonal twice?
 		//6x3 give fewer cache misses?
 		for (j = 0; j < size; ++j) {
-			in[i][j]=in[i][j]<<DECIMAL_PLACES;
 			if (i == j) {
 				out[i][j] = ONE;//1 shifted left 3
 			} else {
@@ -121,38 +128,34 @@ fixed** GaussJordan(short int** in, int size) {
 			}
 			swapRows(in, out, i, j, size);
 		}
-		
-		printf("Got Here.\n");
 	
 		for (j = 0; j < size; ++j) {
 			if (j == i) {
 				continue;
 			}
-			printf("Before:\n");
 			printMatrix(out,size);
 			printf("\n");
-			fixed coeff = -(in[j][i]/(in[i][i]>>DECIMAL_PLACES));
+			fixed coeff = -(in[j][i]/shiftDown(in[i][i],DECIMAL_PLACES));
 			addScalarMultipleOfLine(in, out, i, j, coeff, size);
-			//printf("After:\n");
-			//printMatrix(out,size);
-			//printf("\n");
 		}
 	}
 
 	for(i=0; i<size; ++i){
-		divideRowByConst(in[i], out[i], in[i][i]>>DECIMAL_PLACES, size);
+		divideRowByConst(in[i], out[i], shiftDown(in[i][i],DECIMAL_PLACES), size);
 	}
 
 	return out;
 }
 
 int main(int argc, char** argv) {
+
+	const short matrixSize = 4;
 	
-	short int** test = (short int**) malloc(sizeof(short int*) * 3);
+	fixed** test = (fixed**) malloc(sizeof(fixed*) * matrixSize);
 	
 	int i;
-	for (i = 0; i < 3; ++i) {
-		test[i] = (short int*) malloc(sizeof(short int) * 3);
+	for (i = 0; i < matrixSize; ++i) {
+		test[i] = (fixed*) malloc(sizeof(fixed) * matrixSize);
 	}
 	
 	fprintf(stderr,"Memory allocated.\n");
@@ -161,18 +164,40 @@ int main(int argc, char** argv) {
 	//	{2,4,7},
 	//	{1,2,9} };
 	
-	test[0][0]=3;
-	test[0][1]=1;
-	test[0][2]=1;
-	test[2][0]=1;
-	test[1][0]=2;
-	test[2][1]=2;
-	test[1][1]=4;
-	test[1][2]=7;
-	test[2][2]=9;
+	/*test[0][0] = 3 << DECIMAL_PLACES;
+	test[0][1] = 1 << DECIMAL_PLACES;
+	test[0][2] = 1 << DECIMAL_PLACES;
+	test[1][0] = 2 << DECIMAL_PLACES;
+	test[1][1] = 4 << DECIMAL_PLACES;
+	test[1][2] = 7 << DECIMAL_PLACES;
+	test[2][0] = 1 << DECIMAL_PLACES;
+	test[2][1] = 2 << DECIMAL_PLACES;
+	test[2][2] = 9 << DECIMAL_PLACES;*/
+	
+	//{	{3,1,1,234},
+	//	{2,4,7,70},
+	//	{1,2,9,9},
+	//	{70,220,23,9} };
+	
+	test[0][0] = 3 << DECIMAL_PLACES;
+	test[0][1] = 1 << DECIMAL_PLACES;
+	test[0][2] = 1 << DECIMAL_PLACES;
+	test[0][3] = 234 << DECIMAL_PLACES;
+	test[1][0] = 2 << DECIMAL_PLACES;
+	test[1][1] = 4 << DECIMAL_PLACES;
+	test[1][2] = 7 << DECIMAL_PLACES;
+	test[1][3] = 70 << DECIMAL_PLACES;
+	test[2][0] = 1 << DECIMAL_PLACES;
+	test[2][1] = 2 << DECIMAL_PLACES;
+	test[2][2] = 9 << DECIMAL_PLACES;
+	test[2][3] = 9 << DECIMAL_PLACES;
+	test[3][0] = 70 << DECIMAL_PLACES;
+	test[3][1] = 220 << DECIMAL_PLACES;
+	test[3][2] = 23 << DECIMAL_PLACES;
+	test[3][3] = 9 << DECIMAL_PLACES;
 	
 	fprintf(stderr, "Input matrix initialized...\n");
-	fixed** out = GaussJordan(test,3);
+	fixed** out = GaussJordan(test, matrixSize);
 	printf("Final:\n");
-	printMatrix(out, 3);
+	printMatrix(out, matrixSize);
 }
