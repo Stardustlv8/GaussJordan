@@ -38,11 +38,10 @@ void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo
 	int i;
 	for(i = size-1; i > 0; i-=2) {
 	//for(i = 1; i < size; i+=2){
-                temp = c*in[rowFrom][i];
-//		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
-                scanf( "%i", &temp);
-                temp = shiftDown( temp, DECIMAL_PLACES);
-                in[rowTo][i] = temp;
+                //temp = c*in[rowFrom][i];
+		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
+                //temp = shiftDown( temp, DECIMAL_PLACES);
+               // in[rowTo][i] = temp;
 		out[rowTo][i] += shiftDown((c*out[rowFrom][i]), DECIMAL_PLACES);
 
 		in[rowTo][i-1] += shiftDown((c*in[rowFrom][i-1]), DECIMAL_PLACES);
@@ -214,7 +213,7 @@ int main(int argc, char** argv) {
 	fixed** out;
 	
 	int a;
-	for (a = 0; a < 5000000; a++) {
+	for (a = 0; a < 1000000; a++) {
 	
 		test[0][0] = 3 << DECIMAL_PLACES;
 		test[0][1] = 1 << DECIMAL_PLACES;
