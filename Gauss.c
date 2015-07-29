@@ -14,11 +14,12 @@ inline fixed mod(fixed x,int m){
 
 
 inline int shiftDown(int x, int n) {
-	if ((x >> (n-1)) % 2 == 0) {
+	return (x+(1<<(n-1))>>n);
+	/*if ((x >> (n-1)) % 2 == 0) {
 		return (x >> n);
 	} else {
 		return (x >> n)+1;
-	}
+	}*/
 }
 
 /*Input:
@@ -30,12 +31,18 @@ inline int shiftDown(int x, int n) {
 	size: the size of the row
 
 */
-inline void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
+//inline 
+void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
+        int temp;
 	int i;
 	for(i = size-1; i > 0; i-=2) {
 	//for(i = 1; i < size; i+=2){
-		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
+                temp = c*in[rowFrom][i];
+//		in[rowTo][i] += shiftDown((c*in[rowFrom][i]), DECIMAL_PLACES);
+                scanf( "%i", &temp);
+                temp = shiftDown( temp, DECIMAL_PLACES);
+                in[rowTo][i] = temp;
 		out[rowTo][i] += shiftDown((c*out[rowFrom][i]), DECIMAL_PLACES);
 
 		in[rowTo][i-1] += shiftDown((c*in[rowFrom][i-1]), DECIMAL_PLACES);
