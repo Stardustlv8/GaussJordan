@@ -1,4 +1,4 @@
-CXX = arm-linux-gcc
+CXX = gcc
 CXXFLAGS = -O1
 LDFLAGS = -pg
 

@@ -14,12 +14,12 @@ inline fixed mod(fixed x,int m){
 
 
 inline int shiftDown(int x, int n) {
-	return (x+(1<<(n-1))>>n);
-	/*if ((x >> (n-1)) % 2 == 0) {
+	//return (x+(1<<(n-1))>>n);
+	if ((x >> (n-1)) % 2 == 0) {
 		return (x >> n);
 	} else {
 		return (x >> n)+1;
-	}*/
+	}
 }
 
 /*Input:
@@ -34,6 +34,8 @@ inline int shiftDown(int x, int n) {
 void addScalarMultipleOfLine(fixed** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
 	int i;
+	//for(i=0; i<size; ++i){	
+	//for(i=size-1; i>=0; --i){ 8.09
 	for(i = size-1; i > 0; i-=2) {
 	//for(i = 1; i < size; i+=2){
                 //temp = c*in[rowFrom][i];
@@ -132,7 +134,7 @@ fixed** GaussJordan(fixed** in, int size) {
 					break;
 				}
 			}
-			if(j==size){
+			if(j>=size){
 				fprintf(stderr, "Matrix is not invertible.\n");
 				exit(1);
 			}
@@ -209,7 +211,7 @@ int main(int argc, char** argv) {
 	fixed** out = GaussJordan(test, matrixSize);*/
 	
 	fixed** out;
-	
+	/*
 	int a;
 	for (a = 0; a < 1000000; a++) {
 	
@@ -231,9 +233,18 @@ int main(int argc, char** argv) {
 		test[3][3] = 9 << DECIMAL_PLACES;
 	
 		out = GaussJordan(test, matrixSize);
-	}
+	}*/
 	
-	fprintf(stderr, "Input matrix initialized...\n");
+	/*fixed** test2 = (fixed**)malloc(sizeof(fixed*)*2);
+	test2[0] = (fixed*)malloc(sizeof(fixed)*2);
+	test2[1] = (fixed*)malloc(sizeof(fixed)*2);
+	
+	test2[0][0] = 1 << DECIMAL_PLACES;
+	test2[0][1] = 2 << DECIMAL_PLACES;
+	test2[1][0] = 2 << DECIMAL_PLACES;
+	test2[1][1] = 4 << DECIMAL_PLACES;
+
+	out = GaussJordan(test2, 2);*/ 
 	
 	printf("Final:\n");
 	printMatrix(out, matrixSize);
