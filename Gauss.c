@@ -4,7 +4,7 @@
 #define DECIMAL_PLACES	3
 #define ONE		(1<<DECIMAL_PLACES)
 
-typedef short int fixed;
+typedef short fixed;
 
 
 inline fixed mod(fixed x,int m){
@@ -31,10 +31,8 @@ inline int shiftDown(int x, int n) {
 	size: the size of the row
 
 */
-//inline 
-void addScalarMultipleOfLine(short int** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
+void addScalarMultipleOfLine(fixed** in, fixed** out, int rowFrom, int rowTo, fixed c, int size) {
 	//printf("c: %d, rowFrom: %d, rowTo: %d\n",c,rowFrom,rowTo);
-        int temp;
 	int i;
 	for(i = size-1; i > 0; i-=2) {
 	//for(i = 1; i < size; i+=2){
